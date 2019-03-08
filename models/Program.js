@@ -8,6 +8,7 @@ const ProgramSchema = new mongoose.Schema({
   name: String,
   description: String,
   type: [{ type: mongoose.Schema.ObjectId, ref: 'ProgramType' }],
+  admins: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
 });
 
 //this creates a model class

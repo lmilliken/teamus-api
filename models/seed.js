@@ -33,6 +33,11 @@ const users = [
     nameLast: 'Admin',
     email: 'laurel.milliken@colostate.edu',
   },
+  {
+    nameFirst: 'User',
+    nameLast: 'User',
+    email: 'millifly@colostate.edu',
+  },
 ];
 User.deleteMany({})
   .then(User.insertMany(users).then(stuff => console.log('inserted', stuff)))

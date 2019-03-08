@@ -16,14 +16,17 @@ mongoose.connect(config.mongodb.dbURI, { useNewUrlParser: true });
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(expressValidator);
+
+// current this hangs the server
+// app.use(expressValidator);
 
 const sharedRoutes = require('./routes/sharedRoutes');
 app.use('/api', sharedRoutes);
 
+app.get('/test', (req, res) => res.send('here'));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  `Server up on ${PORT}`;
+  console.log(`Server up on ${PORT}`);
 });
 
 module.exports = { app };
