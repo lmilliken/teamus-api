@@ -5,10 +5,12 @@ const mongoose = require('mongoose');
 // const mongodbErrorHandler = require('mongoose-mongodb-errors');
 
 const ProgramSchema = new mongoose.Schema({
-  name: String,
+  title: String,
   description: String,
-  type: [{ type: mongoose.Schema.ObjectId, ref: 'ProgramType' }],
-  admins: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
+  dateStart: Date,
+  dateEnd: Date,
+  type: { type: mongoose.Schema.ObjectId, ref: 'ProgramType' },
+  admins: { type: mongoose.Schema.ObjectId, ref: 'User' },
 });
 
 //this creates a model class

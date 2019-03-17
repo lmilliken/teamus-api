@@ -55,4 +55,24 @@ router.post('/register', (req, res) => {
     .then(setUser => setUser.save().then(res.send('it works')));
 });
 
+router.get(
+  '/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+  }),
+);
+
+router.get('/google/callback', passport.authenticate('google'), (req, res) => {
+  res.redirect('/');
+});
+
+router.get('/current_user', (req, res) => {
+  res.send(req.user);
+});
+
+router.get('/logout', (req, res) => {
+  req.logOut();
+  res.redirect('/');
+});
+
 module.exports = router;

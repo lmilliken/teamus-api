@@ -21,9 +21,9 @@ router.get('/programTypes', (req, res) => {
 });
 
 router.get('/users', (req, res) => {
-  console.log('/request called', req.body);
+  // console.log('/request called', req.body);
   User.find().then(users => {
-    console.log('user', users);
+    //  console.log('user', users);
     res.send(users);
   });
 });
