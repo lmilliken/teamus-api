@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const expressValidator = require('express-validator');
-
+const cors = require('cors');
 const config = require('./config');
 
 //const errorHandlers = require('./utils/errorHandlers');
@@ -17,7 +17,7 @@ const mongoose = require('mongoose');
 mongoose.connect(config.mongodb.dbURI, { useNewUrlParser: true });
 
 const app = express();
-
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
