@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 
 //remember, this is middleware
 app.use(
-  cookieSession({ maxAge: 30 * 24 * 60 * 60 * 1000, keys: [config.cookieKey] }),
+  cookieSession({ maxAge: 30 * 24 * 60 * 60 * 1000, keys: [config.cookieKey] })
 ); //attaches information to req.session
 
 app.use(passport.initialize()); //pulls info from req.session
@@ -41,7 +41,7 @@ app.use('/api', programRoutes);
 const authRoutes = require('./routes/authRoutes');
 app.use('/auth', authRoutes);
 
-app.get('/test', (req, res) => res.send('here'));
+app.get('/api/test', (req, res) => res.send('this test works!'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
