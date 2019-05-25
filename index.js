@@ -41,6 +41,10 @@ app.use('/api', programRoutes);
 const authRoutes = require('./routes/authRoutes');
 app.use('/auth', authRoutes);
 
+app.get('/test', (req, res) => {
+  res.send('/test is working, this is from the SERVER');
+});
+
 app.get('/api/test', (req, res) => res.send('this test works!'));
 
 const PORT = process.env.PORT || 5000;
