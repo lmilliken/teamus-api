@@ -5,7 +5,7 @@ const passport = require('passport');
 
 const redirectDomain =
   process.env.NODE_ENV === 'production'
-    ? 'https://open-vista-sdev.herokuapp.com'
+    ? 'https://open-vista-dev.herokuapp.com'
     : 'http://localhost:3000';
 
 const mongoose = require('mongoose');
