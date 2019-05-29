@@ -3,6 +3,11 @@ const passport = require('passport');
 
 //do it this way to prevent mongoose from importing several models if you are running several other files
 
+const redirectDomain =
+  process.env.NODE_ENV === 'production'
+    ? 'https://open-vista-sdev.herokuapp.com'
+    : 'http://localhost:3000';
+
 const mongoose = require('mongoose');
 
 const User = mongoose.model('User');
@@ -12,7 +17,7 @@ router.post('/login', (req, res) => {
     failureRedirect: '/login',
     failureFlash: 'this is a failed flash message',
     successRedirect: '/',
-    successFlash: 'You are now logged in flash message ',
+    successFlash: 'You are now logged in flash message '
   });
 });
 
@@ -26,7 +31,7 @@ router.post('/register', (req, res) => {
   req.sanitizeBody('email').normalizeEmail({
     remove_dots: false,
     remove_extension: false,
-    gmail_remove_subaddress: false,
+    gmail_remove_subaddress: false
   });
   req.checkBody('password', 'Password cannot be blank.').notEmpty();
   req
@@ -47,7 +52,7 @@ router.post('/register', (req, res) => {
   const user = new User({
     email: req.body.email,
     firstName: req.body.firstName,
-    lastName: req.body.lastName,
+    lastName: req.body.lastName
   });
 
   user
@@ -58,20 +63,27 @@ router.post('/register', (req, res) => {
 router.get(
   '/google',
   passport.authenticate('google', {
-    scope: ['profile', 'email'],
-  }),
+    scope: ['profile', 'email']
+  })
 );
 
+router.get('/test', (req, res) => {
+  res.send('/auth/test is workin');
+});
+
 router.get('/google/callback', passport.authenticate('google'), (req, res) => {
-  res.redirect('/');
+  console.log('in google callback, domain: ', redirectDomain);
+  res.redirect(redirectDomain + '/jared');
 });
 
 router.get('/current_user', (req, res) => {
+  console.log('current user: ', req.user);
   res.send(req.user);
 });
 
 router.get('/logout', (req, res) => {
   req.logOut();
+  console.log('user logged out');
   res.redirect('/');
 });
 
