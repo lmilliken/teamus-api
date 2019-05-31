@@ -73,10 +73,12 @@ router.get('/test', (req, res) => {
 
 router.get('/google/callback', passport.authenticate('google'), (req, res) => {
   console.log('in google callback, domain: ', redirectDomain);
-  res.redirect(redirectDomain + '/jared');
+  res.redirect(redirectDomain + '/redirect');
 });
 
 router.get('/current_user', (req, res) => {
+  console.log('request credentials: ', req.credentials);
+  console.log('headers: ', req.headers);
   console.log('current user: ', req.user);
   res.send(req.user);
 });

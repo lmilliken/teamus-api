@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const expressValidator = require('express-validator');
 const cors = require('cors');
@@ -17,13 +18,20 @@ const mongoose = require('mongoose');
 mongoose.connect(config.mongodb.dbURI, { useNewUrlParser: true });
 
 const app = express();
-app.use(cors());
+app.use(cors({ credentials: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //remember, this is middleware
+app.use(cookieParser());
 app.use(
-  cookieSession({ maxAge: 30 * 24 * 60 * 60 * 1000, keys: [config.cookieKey] })
+  cookieSession({
+    keys: [config.cookieKey],
+    name: 'MY Session',
+    secret: 'secret',
+    domain: 'herokuapp.com',
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  })
 ); //attaches information to req.session
 
 app.use(passport.initialize()); //pulls info from req.session
