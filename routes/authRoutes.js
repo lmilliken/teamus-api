@@ -5,7 +5,7 @@ const passport = require('passport');
 
 const redirectDomain =
   process.env.NODE_ENV === 'production'
-    ? 'https://open-vista-sdev.herokuapp.com'
+    ? 'https://open-vista-dev.herokuapp.com'
     : 'http://localhost:3000';
 
 const mongoose = require('mongoose');
@@ -73,7 +73,7 @@ router.get('/test', (req, res) => {
 
 router.get('/google/callback', passport.authenticate('google'), (req, res) => {
   console.log('in google callback, domain: ', redirectDomain);
-  res.redirect(redirectDomain + '/redirect');
+  res.redirect(redirectDomain + '/awesome');
 });
 
 router.get('/current_user', (req, res) => {
