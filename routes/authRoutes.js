@@ -6,7 +6,7 @@ const passport = require('passport');
 const redirectDomain =
   process.env.NODE_ENV === 'production'
     ? 'https://open-vista-dev.herokuapp.com'
-    : 'http://localhost:3000';
+    : '/';
 
 const mongoose = require('mongoose');
 
@@ -60,21 +60,29 @@ router.post('/register', (req, res) => {
     .then(setUser => setUser.save().then(res.send('it works')));
 });
 
-router.get(
-  '/google',
-  passport.authenticate('google', {
-    scope: ['profile', 'email']
-  })
-);
-
 router.get('/test', (req, res) => {
   res.send('/auth/test is workin');
 });
 
-router.get('/google/callback', passport.authenticate('google'), (req, res) => {
-  console.log('in google callback, domain: ', redirectDomain);
-  res.redirect(redirectDomain + '/awesome');
-});
+router.get(
+  '/google',
+  passport.authenticate('google', {
+    session: false,
+    scope: ['profile', 'email']
+  })
+);
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false }),
+  (req, res) => {
+    console.log('in google callback, domain: ', req);
+    //res.send('in /google/callback');
+    res.header('x-auth', req.user.token).send();
+    //res.redirect(...);
+    // res.redirect(redirectDomain + '/awesome');
+  }
+);
 
 router.get('/current_user', (req, res) => {
   console.log('request credentials: ', req.credentials);

@@ -8,10 +8,10 @@ const User = require('../models/User');
 //const User = mongoose.model('users')
 //from mongoose.model('users', userSchema)
 
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser((userID, done) => {
-  User.findById(userID).then(user => done(null, user));
-});
+// passport.serializeUser((user, done) => done(null, user.id));
+// passport.deserializeUser((userID, done) => {
+//   User.findById(userID).then(user => done(null, user));
+// });
 
 passport.use(
   new GoogleStrategy(
@@ -19,34 +19,37 @@ passport.use(
       clientID: config.google.clientID,
       clientSecret: config.google.clientSecret,
       callbackURL: '/auth/google/callback',
-      proxy: true,
+      proxy: true
     },
     async (accessToken, refreshToken, profile, done) => {
       const existingUser = await User.findOne({
-        providedId: profile.id,
-        provider: 'Google',
+        idGoogle: profile.id
       });
 
       if (existingUser) {
         //user already exists
-        done(null, existingUser); //null is the error object
+        const token = await existingUser.generateAuthToken();
+        console.log('token from existing user', token);
+
+        done(null, { token }); //null is the error object
       } else {
         const createdUser = await new User({
-          providedId: profile.id,
-          provider: 'Google',
-          email: profile.emails[0].value,
+          idGoogle: profile.id,
+          email: profile.emails[0].value
         }).save();
 
-        done(null, createdUser);
+        const token = await createdUser.generateAuthToken();
+
+        done(null, { token }); //next this goes to /auth/google/callback with req.user.token
       }
-    },
-  ),
+    }
+  )
 );
 
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'email',
+      usernameField: 'email'
     },
     function(email, password, done) {
       User.findOne({ email: email }, async function(err, user) {
@@ -66,6 +69,6 @@ passport.use(
         }
         return done(null, user);
       });
-    },
-  ),
+    }
+  )
 );

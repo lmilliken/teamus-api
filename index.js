@@ -22,12 +22,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //remember, this is middleware
-app.use(
-  cookieSession({ maxAge: 30 * 24 * 60 * 60 * 1000, keys: [config.cookieKey] })
-); //attaches information to req.session
+//attaches information to req.session
+// app.use(
+//   cookieSession({ maxAge: 30 * 24 * 60 * 60 * 1000, keys: [config.cookieKey] })
+// );
 
 app.use(passport.initialize()); //pulls info from req.session
-app.use(passport.session());
+// app.use(passport.session());
 
 // current this hangs the server
 // app.use(expressValidator);
