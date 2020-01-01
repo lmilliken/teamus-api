@@ -7,7 +7,10 @@ const md5 = require('md5');
 const validator = require('validator');
 const mongodbErrorHandler = require('mongoose-mongodb-errors');
 const passportLocalMongoose = require('passport-local-mongoose');
+const bcrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
+const _ = require('lodash');
+
 const config = require('../config');
 
 const userSchema = new Schema({
@@ -23,6 +26,7 @@ const userSchema = new Schema({
   password: String,
   email: {
     type: String,
+    unique: true,
     lowercase: true,
     trim: true,
     validate: [validator.isEmail, 'Email address is invalid.'],
@@ -47,6 +51,51 @@ const userSchema = new Schema({
   ]
 });
 
+//overriding method, this is what gets sent back when you refer to the "User" object.  Prevents sending password
+userSchema.methods.toJSON = function() {
+  var user = this;
+  var userObject = user.toObject();
+
+  return _.pick(userObject, ['_id', 'email']);
+};
+
+//on save hook to encrypt password
+userSchema.pre('save', function(next) {
+  const user = this;
+  var password = user.password;
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
+      return next(err);
+    }
+
+    bcrypt.hash(password, salt, null, (err, hash) => {
+      if (err) {
+        return next(err);
+      }
+      user.password = hash;
+      next();
+    });
+  });
+
+  // if (user.isModified('password')) {
+  //   var password = user.password;
+
+  //   bcrypt.genSalt(10, (err, salt) => {
+  //     if (err) {
+  //       return next(err);
+  //     }
+
+  //     bcrypt.hash(password, salt, (err, hash) => {
+  //       if (err) {
+  //         return next(err);
+  //       }
+  //       user.password = hash;
+  //       next();
+  //     });
+  //   });
+  // }
+});
+
 //instance method that we call on a specifc instance of user, not the User model
 userSchema.methods.generateAuthToken = function() {
   var user = this;
@@ -65,16 +114,14 @@ userSchema.methods.generateAuthToken = function() {
 // userSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
 userSchema.plugin(mongodbErrorHandler);
 
-userSchema.methods.verifyPassword = async function(password) {
-  const user = this;
-  console.log('password', password);
-  if (user.password === password) {
-    console.log('passwords match');
-    return user;
-  }
-
-  console.log('NO PASSWORD MATCH');
-  return false;
+//new Stephen, advanced React
+userSchema.methods.verifyPassword = function(candidatePassword, callback) {
+  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, isMatch);
+  });
 };
 
 //this creates a model class
