@@ -81,24 +81,18 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       const existingUser = await User.findOne({
-        idGoogle: profile.id
+        $or: [{ idGoogle: profile.id }, { email: profile.emails[0].value }]
       });
 
       if (existingUser) {
         //user already exists
-        const token = await existingUser.generateAuthToken();
-        console.log('token from existing user', token);
-
-        done(null, { token }); //null is the error object
+        return done(null, existingUser);
       } else {
         const createdUser = await new User({
           idGoogle: profile.id,
           email: profile.emails[0].value
         }).save();
-
-        const token = await createdUser.generateAuthToken();
-
-        done(null, { token }); //next this goes to /auth/google/callback with req.user.token
+        return done(null, createdUser);
       }
     }
   )

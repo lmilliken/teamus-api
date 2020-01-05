@@ -36,19 +36,7 @@ const userSchema = new Schema({
   emailConfirmed: {
     type: Boolean,
     default: false
-  },
-  tokens: [
-    {
-      access: {
-        type: String,
-        required: true
-      },
-      token: {
-        type: String,
-        required: true
-      }
-    }
-  ]
+  }
 });
 
 //overriding method, this is what gets sent back when you refer to the "User" object.  Prevents sending password

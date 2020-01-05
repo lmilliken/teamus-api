@@ -5,7 +5,7 @@ const passportSetup = require('../utils/passportSetup');
 const redirectDomain =
   process.env.NODE_ENV === 'production'
     ? 'https://open-vista-dev.herokuapp.com'
-    : '/';
+    : 'http://localhost:3000';
 
 //do it this way to prevent mongoose from importing several models if you are running several other files
 
@@ -92,11 +92,11 @@ router.get(
   '/google/callback',
   passport.authenticate('google', { session: false }),
   (req, res) => {
-    console.log('in google callback, domain: ', req);
+    //console.log('in google callback, domain: ', req);
     //res.send('in /google/callback');
-    res.header('x-auth', req.user.token);
+    //res.send({ token: tokenForUser(req.user) });
     //res.redirect(...);
-    res.redirect(redirectDomain + '/awesome');
+    res.redirect(redirectDomain + '?token=' + tokenForUser(req.user));
   }
 );
 
