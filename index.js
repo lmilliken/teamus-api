@@ -9,6 +9,8 @@ const morgan = require('morgan');
 //const errorHandlers = require('./utils/errorHandlers');
 
 //this just executes the file, no export needed
+//needed to avoid "MissingSchemaError: Schema hasn't been registered for model "ExpertAreas"." error
+require('./models/ExpertArea');
 require('./models/ProgramType');
 require('./models/Program');
 require('./models/User');
