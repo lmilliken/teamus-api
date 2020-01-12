@@ -21,12 +21,20 @@ router.get('/test', requireAuth, (req, res) => {
   res.send('/auth/test is workin');
 });
 
+router.get('/current_user', requireAuth, (req, res) => {
+  console.log('request headers: ', req.headers);
+  // const user = jwt.decode(req.query.token, config.JWT_SECRET);
+  console.log('current user: ', req.user);
+  res.send(req.user);
+});
+
 //middleware
 const requireSignin = passport.authenticate('local', { session: false });
 router.post('/login', requireSignin, (req, res, next) => {
   //user already had their email and password authorized with the requireSignin middleware, we just need to give them a token
+  console.log('/loging request', req.user);
 
-  res.send({ token: tokenForUser(req.user) });
+  res.send({ user: req.user, token: tokenForUser(req.user) });
   //req.user is provided from the localLogin strategy's return done(null, user) in passportSetup.js
 });
 
@@ -37,7 +45,6 @@ function tokenForUser(user) {
 }
 
 router.post('/register', async (req, res) => {
-  console.log('in /register');
   //1. validating...currently not working, tied to app.use(expressValidator);
   // req.stizeBody('firstName');ani
   // req.checkBody('firstName', 'First name is required.').notEmpty();
@@ -77,7 +84,9 @@ router.post('/register', async (req, res) => {
     password: req.body.password
   });
 
-  newUser.save().then(res.send({ token: tokenForUser(newUser) }));
+  newUser
+    .save()
+    .then(res.send({ user: newUser, token: tokenForUser(newUser) }));
 });
 
 router.get(
@@ -99,13 +108,6 @@ router.get(
     res.redirect(redirectDomain + '?token=' + tokenForUser(req.user));
   }
 );
-
-router.get('/current_user', (req, res) => {
-  console.log('request credentials: ', req.credentials);
-  console.log('headers: ', req.headers);
-  console.log('current user: ', req.user);
-  res.send(req.user);
-});
 
 router.get('/logout', (req, res) => {
   req.logOut();

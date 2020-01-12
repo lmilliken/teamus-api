@@ -43,7 +43,7 @@ const userSchema = new Schema({
 userSchema.methods.toJSON = function() {
   var user = this;
   var userObject = user.toObject();
-
+  //, 'nameFirst', 'nameLast'
   return _.pick(userObject, ['_id', 'email']);
 };
 
@@ -84,6 +84,7 @@ userSchema.pre('save', function(next) {
   // }
 });
 
+//old
 //instance method that we call on a specifc instance of user, not the User model
 userSchema.methods.generateAuthToken = function() {
   var user = this;

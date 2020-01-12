@@ -42,7 +42,6 @@ const localLogin = new LocalStrategy(localOptions, function(
       if (!isMatch) {
         return done(null, false);
       }
-
       return done(null, user);
     });
   });
@@ -57,6 +56,7 @@ const jwtOptions = {
 //2. create JWT strategy
 const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
   //check if userID in payload exists in database
+  console.log('payload:', payload);
   User.findById(payload.sub, function(err, user) {
     if (err) {
       return done(err, false);
