@@ -24,6 +24,7 @@ const userSchema = new Schema({
   nameFirst: String,
   nameLast: String,
   password: String,
+  photo: String,
   email: {
     type: String,
     unique: true,
@@ -44,26 +45,29 @@ userSchema.methods.toJSON = function() {
   var user = this;
   var userObject = user.toObject();
   //, 'nameFirst', 'nameLast'
-  return _.pick(userObject, ['_id', 'email']);
+  return _.pick(userObject, ['_id', 'email', 'nameFirst', 'nameLast', 'photo']);
 };
 
 //on save hook to encrypt password
 userSchema.pre('save', function(next) {
   const user = this;
   var password = user.password;
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) {
-      return next(err);
-    }
-
-    bcrypt.hash(password, salt, null, (err, hash) => {
+  if (password) {
+    bcrypt.genSalt(10, (err, salt) => {
       if (err) {
         return next(err);
       }
-      user.password = hash;
-      next();
+
+      bcrypt.hash(password, salt, null, (err, hash) => {
+        if (err) {
+          return next(err);
+        }
+        user.password = hash;
+        next();
+      });
     });
-  });
+  }
+  next();
 
   // if (user.isModified('password')) {
   //   var password = user.password;

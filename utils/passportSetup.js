@@ -16,7 +16,7 @@ const User = require('../models/User');
 //   User.findById(userID).then(user => done(null, user));
 // });
 
-//1. create local strategy, this is used when user logs in to verify that email and password exist
+//1. create local strategy, this is used when user logs in via /auth/login to verify that email and password exist
 const localOptions = {
   usernameField: 'email'
 };
@@ -48,7 +48,7 @@ const localLogin = new LocalStrategy(localOptions, function(
 });
 passport.use(localLogin);
 
-//1. set up options of JWT Strategy, this is used to for middleware to make sure that request is authorized (verifying that they have a valid token, "decoding" the jwt that came with the request)
+//1. set up options of JWT Strategy, this is used to for middleware to make sure that request is authorized (verifying that they have a valid token, "decoding" the jwt that came with the request), used with requireAuth middleware
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromHeader('authorization'),
   secretOrKey: config.JWT_SECRET
@@ -80,17 +80,21 @@ passport.use(
       proxy: true
     },
     async (accessToken, refreshToken, profile, done) => {
+      console.log('google profile: ', profile);
       const existingUser = await User.findOne({
         $or: [{ idGoogle: profile.id }, { email: profile.emails[0].value }]
       });
 
       if (existingUser) {
-        //user already exists
-        return done(null, existingUser);
+        console.log('user exists');
+        return done(null, existingUser); //call done() to move to /google/callback
       } else {
         const createdUser = await new User({
           idGoogle: profile.id,
-          email: profile.emails[0].value
+          email: profile.emails[0].value,
+          nameFirst: profile.name.givenName,
+          nameLast: profile.name.familyName,
+          photo: profile.photos[0].value
         }).save();
         return done(null, createdUser);
       }

@@ -4,7 +4,7 @@ const passportSetup = require('../utils/passportSetup');
 
 const redirectDomain =
   process.env.NODE_ENV === 'production'
-    ? 'https://open-vista-dev.herokuapp.com'
+    ? 'https://teamus-foco.herokuapp.com'
     : 'http://localhost:3000';
 
 //do it this way to prevent mongoose from importing several models if you are running several other files
@@ -38,6 +38,7 @@ router.post('/login', requireSignin, (req, res, next) => {
   //req.user is provided from the localLogin strategy's return done(null, user) in passportSetup.js
 });
 
+//might eventually move this to User model
 function tokenForUser(user) {
   const timestamp = new Date().getTime();
   //sub = subject; iat: issued at time
@@ -79,8 +80,8 @@ router.post('/register', async (req, res) => {
   //2. registering
   const newUser = new User({
     email: req.body.email,
-    nameFirst: req.body.firstName,
-    nameLast: req.body.lastName,
+    nameFirst: req.body.nameFirst,
+    nameLast: req.body.nameLast,
     password: req.body.password
   });
 
@@ -101,18 +102,12 @@ router.get(
   '/google/callback',
   passport.authenticate('google', { session: false }),
   (req, res) => {
-    //console.log('in google callback, domain: ', req);
+    console.log('in google callback, domain: ', req.user);
     //res.send('in /google/callback');
     //res.send({ token: tokenForUser(req.user) });
     //res.redirect(...);
     res.redirect(redirectDomain + '?token=' + tokenForUser(req.user));
   }
 );
-
-router.get('/logout', (req, res) => {
-  req.logOut();
-  console.log('user logged out');
-  res.redirect('/');
-});
 
 module.exports = router;
