@@ -8,7 +8,14 @@ const mongoose = require('mongoose');
 
 //Wes
 const ProgramType = mongoose.model('ProgramType');
+const ExpertAreas = mongoose.model('ExpertAreas');
 const User = mongoose.model('User');
+
+router.get('/expertAreas', (req, res) => {
+  ExpertAreas.find().then(areas => {
+    res.send(areas);
+  });
+});
 
 //const ProgramType = require('../models/ProgramType');
 router.get('/programTypes', (req, res) => {
